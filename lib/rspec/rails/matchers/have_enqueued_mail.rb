@@ -76,7 +76,7 @@ module RSpec
         def arguments_match?(job)
           @args =
             if @mail_args.any?
-              base_mailer_args + @mail_args
+              base_mailer_args + process_arguments(job, @mail_args)
             elsif @mailer_class && @method_name
               base_mailer_args + [any_args]
             elsif @mailer_class
@@ -86,6 +86,18 @@ module RSpec
             end
 
           super(job)
+        end
+        
+        def process_arguments(job, given_mail_args)
+          # Old matcher behavior working with all builtin classes but ActionMailer::MailDeliveryJob
+          return given_mail_args unless defined?(ActionMailer::MailDeliveryJob) && job[:job] <= ActionMailer::MailDeliveryJob
+
+          # If matching args starts with a hash and job instance has params match with them
+          if given_mail_args.first.is_a?(Hash) && job[:args][3]['params'].present?
+            [hash_including(params: given_mail_args[0], args: given_mail_args.drop(1))]
+          else
+            [hash_including(args: given_mail_args)]
+          end
         end
 
         def base_mailer_args
