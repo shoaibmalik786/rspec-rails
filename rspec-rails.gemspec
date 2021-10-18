@@ -46,13 +46,13 @@ Gem::Specification.new do |s|
   # get released.
   %w[core expectations mocks support].each do |name|
     if ENV['RSPEC_CI']
-      s.add_runtime_dependency "rspec-#{name}", ENV.fetch('RSPEC_VERSION', '3.11.0.pre')
+      s.add_runtime_dependency "rspec-#{name}", "~> 3.10.0"
     elsif RSpec::Rails::Version::STRING =~ /pre/ # prerelease builds
       expected_rspec_version = "3.11.0.pre"
-      s.add_runtime_dependency "rspec-#{name}", "= #{expected_rspec_version}"
+      s.add_runtime_dependency "rspec-#{name}", "~> 3.10.0"
     else
       expected_rspec_version = "3.10.0"
-      s.add_runtime_dependency "rspec-#{name}", "~> #{expected_rspec_version.split(".")[0..1].join(".")}"
+      s.add_runtime_dependency "rspec-#{name}", "~> 3.10.0"
     end
   end
 
