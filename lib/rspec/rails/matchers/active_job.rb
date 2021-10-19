@@ -199,6 +199,10 @@ module RSpec
           end
 
           def serialize_and_deserialize_arguments(args)
+            if ((defined?(hash_including) && args[3].class != hash_including.class) || !defined?(hash_including)) &&
+              (args[3].class != RSpec::Mocks::ArgumentMatchers::AnyArgsMatcher)
+              args = [args[0], args[1], args[2], args: args.drop(3)]
+            end
             serialized = ::ActiveJob::Arguments.serialize(args)
             ::ActiveJob::Arguments.deserialize(serialized)
           rescue ::ActiveJob::SerializationError
